@@ -41,30 +41,11 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
-    }public function googleCallback()
+    }
+    public function googleCallback()
     {
-        // $userGoogle = Socialite::driver('google')->user();
-        $user = Socialite::driver('google')->user();
-
-        $providerId = $user->getID();
-        $provider = 'google';
-
-        $user = User::where('provider', $provider)
-        ->where('provider_id', $providerId)
-        ->first();
-        if(!$user){
-            $user = new User();
-            $user->name =$user->getName();
-            $user->email =$user->getEmail();
-            $user->provider_id =$providerId;
-            $user->save();
-        }
-        $userId = $user->id;
-        Auth::loginUsingID($userId);
-
-        // $userGoogle = Socialite::driver('google')->user();
-        // return $this->handleSocialLogin('google', $userGoogle);
-
+        $userGoogle = Socialite::driver('google')->user();
+        return $this->handleSocialLogin('google', $userGoogle);
     }
     
     public function handleSocialLogin($provider, $userProvider){
@@ -76,8 +57,8 @@ class LoginController extends Controller
         ->first();
         if(!$user){
             $user = new User();
-            $user->name = $userProvider->getName();
-            $user->email = $userProvider->getEmail();
+            $user->name = $userProvider->name;
+            $user->email = $userProvider->email;
             $user->provider_id = $providerId;
             $user->provider = $provider;
             $user->password = Hash::make(rand());
